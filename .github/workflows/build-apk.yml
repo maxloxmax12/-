@@ -12,7 +12,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: mihadril-apk-${{ github.ref }}
+  group: mihadril-apk-${{ github.sha }}
   cancel-in-progress: false
 
 jobs:
