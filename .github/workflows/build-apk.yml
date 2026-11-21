@@ -51,6 +51,7 @@ jobs:
           # Use the intact character artwork as the app portrait and launcher icon.
           sed -i "s/'icon.png'/'character.jpg'/g" Mihadril/main.py
           sed -i 's/kivy==2.3.0/kivy==2.3.2/' Mihadril/buildozer.spec
+          sed -i '/^requirements =/s/$/,charset-normalizer==3.4.4/' Mihadril/buildozer.spec
           test -f Mihadril/main.py
           test -f Mihadril/service.py
           test -f Mihadril/character.jpg
