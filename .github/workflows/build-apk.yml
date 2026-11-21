@@ -46,29 +46,16 @@ jobs:
       - name: Restore Android project archive
         run: |
           cat .source-parts/part-*.b64 | base64 --decode > Mihadril_Source.zip
-          # The only damaged entry in the transport archive is the launcher icon.
-          # Exclude it and reconstruct a valid icon from the separate clean payload.
+          # Skip the one damaged icon entry from the text transport.
           unzip -q Mihadril_Source.zip -x 'Mihadril/icon.png'
-          base64 --decode .source-parts/icon-64.png.b64 > Mihadril/icon.png
-          python - <<'PY'
-          import struct, zlib
-          p = "Mihadril/icon.png"
-          data = open(p, "rb").read()
-          assert data[:8] == b"\x89PNG\r\n\x1a\n", "launcher icon is not a PNG"
-          pos = 8
-          while pos < len(data):
-              size = struct.unpack(">I", data[pos:pos+4])[0]
-              kind = data[pos+4:pos+8]
-              chunk = data[pos+4:pos+8+size]
-              crc = struct.unpack(">I", data[pos+8+size:pos+12+size])[0]
-              assert zlib.crc32(chunk) & 0xffffffff == crc, "PNG CRC mismatch"
-              pos += 12 + size
-              if kind == b"IEND":
-                  break
-          print("Launcher icon validated:", len(data), "bytes")
-          PY
+          # Use the intact character artwork as the app portrait and launcher icon.
+          sed -i "s/'icon.png'/'character.jpg'/g" Mihadril/main.py
+          sed -i 's/icon\.png/character.jpg/g' Mihadril/buildozer.spec
           test -f Mihadril/main.py
+          test -f Mihadril/service.py
+          test -f Mihadril/character.jpg
           test -f Mihadril/buildozer.spec
+          grep -n "ICON_IMG\|icon.filename\|presplash.filename" Mihadril/main.py Mihadril/buildozer.spec
           ls -lah Mihadril
 
       - name: Install Buildozer
