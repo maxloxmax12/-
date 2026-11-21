@@ -51,6 +51,7 @@ jobs:
           # Use the intact character artwork as the app portrait and launcher icon.
           sed -i "s/'icon.png'/'character.jpg'/g" Mihadril/main.py
           sed -i 's/icon\.png/character.jpg/g' Mihadril/buildozer.spec
+          sed -i 's/kivy==2.3.0/kivy==2.3.2/' Mihadril/buildozer.spec
           test -f Mihadril/main.py
           test -f Mihadril/service.py
           test -f Mihadril/character.jpg
@@ -61,7 +62,7 @@ jobs:
       - name: Install Buildozer
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          python -m pip install buildozer==1.5.0 Cython==0.29.36 virtualenv
+          python -m pip install buildozer==1.5.0 'Cython<3.4' virtualenv
 
       - name: Build debug APK
         working-directory: Mihadril
